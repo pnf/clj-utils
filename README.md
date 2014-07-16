@@ -1,10 +1,34 @@
 # clj-utils
 
-A Clojure library designed to ... well, that part is up to you.
+Unrelated Clojure utilities
 
 ## Usage
 
-FIXME
+### acyclic.util.cli
+
+Define ```cli-options``` as per ```clojure.tools.cli``` and a function ```doit```
+that takes a key-value map and returns some result.  Then
+~~~.clj
+  (defn -main [& args] (edn-app args cli-options doit)
+~~~
+If you do not specifiy corresponding options yourself, then you'll get for free:
+
+* --log LOGLEVEL  (e.g. "debug", "info", etc.)
+* --help  (prints out an unfriendly but useful dump of option definitions)
+* --id SOMESTRING  (Anything to uniquely identify this invocation)
+* --hang SECS  (Sleep for SECS before exiting)
+* --opts EDNMAP  (The entire options map in EDN parseable form, e.g. ```{:yournum 3 :id \"XYZ\"}```
+
+Options will be processed into key-value pairs (as per ```clojure.tools.cli``` again)
+and the return value of doit will be wrapped as
+~~~
+{:result return-value-of-doit
+ :exception nil-or-stack-trace
+ :log nil-or-vector
+ :id the-id-you-specified-or-X
+}
+and printed to standard output in EDN parseable form.
+
 
 ## License
 
