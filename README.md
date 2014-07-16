@@ -21,12 +21,13 @@ If you do not specifiy corresponding options yourself, then you'll get for free:
 
 Options will be processed into key-value pairs (as per ```clojure.tools.cli``` again)
 and the return value of doit will be wrapped as
-~~~
+~~~.clj
 {:result return-value-of-doit
  :exception nil-or-stack-trace
  :log nil-or-vector
  :id the-id-you-specified-or-X
 }
+~~~
 and printed to standard output in EDN parseable form.
 
 
