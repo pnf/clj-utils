@@ -2,6 +2,7 @@
   (:require [clojure.tools.cli :refer [parse-opts]]
             [clojure.core.async :as async :refer [<! >! <!! >!! timeout chan alt!! go close!]]
             [acyclic.utils.log :as ul]
+            [clojure.pprint :as pp]
             [taoensso.timbre :as timbre])
   (:gen-class))
 (timbre/refer-timbre)
@@ -11,9 +12,13 @@
 (defn- augment-cli-options [cli-options]
   (let [opts                (set (map #(->> % second (re-find #"--(\w+)\b") second keyword)
                                       cli-options))
-        our                 (set (filter #(not (opts %)) [:help :hang :log :id]))]
+        our                 (set (filter #(not (opts %)) [:opts :help :hang :log :id]))]
     [our 
      (cond-> cli-options
+             (our :opts)
+             (conj ["-o" "--opts OPTS" "Multiple options as EDN string, overridden by other parameters on command line."
+                    :default nil
+                    :parse-fn read-string])
              (our :help)
              (conj ["-h" "--help" "Nearly useless help."])
              (our :hang)
@@ -29,8 +34,9 @@
          parsed            (parse-opts args cli-options)
          errs              (:errors parsed)
          opts              (:options parsed)
-         opts              (merge (dissoc opts :opts) (:opts opts))]
-    [our errs opts]))
+         opts              (if-not (our :opts) opts
+                                   (merge (dissoc opts :opts) (:opts opts)))]
+    [our errs opts cli-options]))
 
 (defn- wrapped-result [f opts log]
   (ul/set-logging! log)
@@ -45,15 +51,16 @@
 (defn edn-app
   ([args cli-options f]  (edn-app false args cli-options f))
   ([repl args cli-options f]
-     (let [[our errs opts] (really-process-opts args cli-options)]
+     (let [[our errs opts cli2] (really-process-opts args cli-options)]
        (cond errs
              (do 
-               (println cli-options opts errs)
+               (pp/pprint errs)
+               (pp/pprint cli2)
                (when-not repl (System/exit 1))
                nil)
              (and (our :help) (:help opts))
              (do 
-               (println cli-options)
+               (pp/pprint cli2)
                (when-not repl (System/exit 0))
                nil)
              :else
