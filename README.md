@@ -11,9 +11,9 @@ that takes a key-value map and returns some result.  Then
 ~~~.clj
   (defn -main [& args] (edn-app args cli-options doit)
 ~~~
-If you do not specifiy corresponding options yourself, then you'll get for free:
+If you do not specify corresponding options yourself, then you'll get for free:
 
-* --log LOGLEVEL  (e.g. "debug", "info", etc.)
+* --log LOGLEVEL  (e.g. "debug", "info", etc., which will be ```keyword```ed and passed to ```timbre```
 * --help  (prints out an unfriendly but useful dump of option definitions)
 * --id SOMESTRING  (Anything to uniquely identify this invocation)
 * --hang SECS  (Sleep for SECS before exiting)
