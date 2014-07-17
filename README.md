@@ -30,6 +30,19 @@ and the return value of doit will be wrapped as
 ~~~
 and printed to standard output in EDN parseable form.
 
+### acyclic.utils.log
+
+A few handy functions that I and probably nobody else will use in concert with
+```taoensso.timbre```.
+
+* ```(strack-trace e)``` - returns a full stack trace from an ```Exception``` as a vector of strings
+* ```(fname f)``` - returns the qualified name of a clojure function, as a string
+* ```(set-logging level)``` - Sets the ```timbre``` logging level as specified and
+  installs an appender that
+ * accrues log events in a vector
+ * prints them to stderr as well
+* ```(with-accrued-log m)``` - places the vector of accrued events into map ```m```, keyed by ```:log```.
+
 
 ## License
 
