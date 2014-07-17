@@ -5,9 +5,11 @@
 
 (defn stack-trace [e]
   (let [sw (java.io.StringWriter.)
-        pw (java.io.PrintWriter. sw)]
-    (.printStackTrace e pw)
-    (.toString sw)))
+        pw (java.io.PrintWriter. sw)
+        _  (.printStackTrace e pw)
+        s  (.toString sw)
+        ls (clojure.string/split-lines s)]
+    (vec (map #(clojure.string/replace % "\tat " "") ls))))
 
 (defn fname
   "Extract the qualified name of a clojure function as a string."
