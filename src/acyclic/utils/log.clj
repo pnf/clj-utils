@@ -11,10 +11,17 @@
         ls (clojure.string/split-lines s)]
     (vec (map #(clojure.string/replace % "\tat " "") ls))))
 
+(def OPTPAT
+  (re-pattern (str "\\b" (clojure.string/join "|" (vals clojure.lang.Compiler/CHAR_MAP)) "\\b" )))
+
+(def  STR->OPT
+  (apply hash-map (mapcat #(vector (second %) (str (first %))) clojure.lang.Compiler/CHAR_MAP)))
+
 (defn fname
   "Extract the qualified name of a clojure function as a string."
   [f]
   (-> (str f)
+      (clojure.string/replace OPTPAT STR->OPT)
       (clojure.string/replace-first "$" "/")
       (clojure.string/replace #"@\w+$" "")
       (clojure.string/replace #"_" "-")))
