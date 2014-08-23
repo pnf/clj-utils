@@ -41,4 +41,11 @@
                                                (timbre/str-println output)))}}))
   (timbre/set-level! (or level :info)))
 
+(def iida (atom 0))
+(defn iid [& s]
+  (if (timbre/level-sufficient? :trace nil)
+    (str  (clojure.string/join "-" (map str (filter #(not (nil? %)) s)) ) "-" (str (swap! iida inc)))
+    nil))
+
+
 (defn with-accrued-log [m] (assoc m :log @log-atom))
