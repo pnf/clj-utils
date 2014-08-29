@@ -6,7 +6,7 @@
   (let [ks (if (sequential? k) k (paths k))
         ks (or ks [k])
         f  (first ks)
-        [ks v] if ((fn? f) [(rest ks) (f v)] [ks v])]
+        [ks v] (if (fn? f) [(rest ks) (f v)] [ks v])]
     (assoc-in o ks v)))
 
 (defn ph-assoc [o paths & kvs]
