@@ -59,7 +59,9 @@ any IFn arguments are applied in lieu of the next get."
     [k (get m k)]
     [(first  k) (get+ m (second k))]))
 
-(defn mseq->m [mseq k]
+(defn mseq->m
+  "Return a map containing, for each map m in sequence mseq, {(m k) m}"
+ [mseq k]
   (into {} (map  #(vector (% k) %) mseq)))
 
 (defn m-section
@@ -74,6 +76,22 @@ as the last entry and be used to transform the result."
   [m ks]
   (into {} (map (partial x-entry m) ks)))
 
+(defn extract-keys-from-map
+    "Given opts of form {:k1 v1 :k2 v2 ..}, return [opts' vs] where
+vs are values corresponding to ks and opts' is opts with those pairs removed."
+    [opts ks]
+    (let [vals (map opts ks)
+          opts (apply dissoc opts ks)]
+      [opts vals]))
+
+(defn extract-opts
+  "Given opts of form [:k1 v1 :k2 v2 ..], return [opts' vs] where
+vs are values corresponding to ks and opts' is opts with those pairs removed."
+  [opts ks]
+  (let [opts        (apply hash-map opts)
+        [opts vals] (extract-keys-from-map opts ks)
+        opts        (flatten (seq opts))]
+    [opts vals]))
 
 
 (comment
