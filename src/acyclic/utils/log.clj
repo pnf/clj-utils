@@ -1,6 +1,8 @@
 (ns acyclic.utils.log
   (:require
-   [taoensso.timbre :as timbre]))
+   [taoensso.timbre :as timbre]
+   [taoensso.carmine :as car :refer (wcar)]
+   [taoensso.timbre.appenders.carmine :as car-appender]))
 (timbre/refer-timbre)
 
 (defn stack-trace [e]
@@ -27,19 +29,41 @@
       (clojure.string/replace #"_" "-")))
 
 (def log-atom (atom []))
+(def redis-atom (atom nil))
+(defn set-logging! [log]
 
-(defn set-logging! [level]
-  (when level 
-    (timbre/set-config! [:appenders] {:accrue
-                                      {:min-level nil :enabled? true :async? false :rate-limit nil
-                                       :fn (fn [log-entry]
-                                             (swap! log-atom (fn [log-vec] conj log-vec log-entry)))}
-                                      :stderr
-                                      {:min-level nil :enabled? true :async? false :rate-limit nil
-                                       :fn (fn [{:keys [error? output]}] ; Can use any appender args
-                                             (binding [*out* *err*]
-                                               (timbre/str-println output)))}}))
-  (timbre/set-level! (or level :info)))
+  (when log 
+    (let [[level host port] (clojure.string/split log #"\:")
+          _ (println level host port)
+          level             (keyword level)
+          port              (and port (Integer/parseInt port))]
+      (if port
+        (do
+          (reset! redis-atom {:pool {} :spec {:host host :port port}})
+          (wcar @redis-atom car/ping)
+          (timbre/set-config!
+           [:appenders :carmine]
+           (try 
+             (car-appender/make-carmine-appender {}  {:conn-opts @redis-atom})
+             (catch Exception e (throw (ex-info
+                                        "Carmine appender error"
+                                        {:data (ex-data e)
+                                         :msg (.getMessage e)
+                                         :orig (.getCause e)
+                                         :orig-msg (-> e .getCause .getMessage) }))))))
+        (timbre/set-config!
+         [:appenders]
+         {:accrue
+          {:min-level nil :enabled? true :async? false :rate-limit nil
+           :fn (fn [log-entry]
+                 (swap! log-atom (fn [log-vec] conj log-vec log-entry)))}
+          :stderr
+          {:min-level nil :enabled? true :async? false :rate-limit nil
+           :fn (fn [{:keys [error? output]}] ; Can use any appender logs
+                 (binding [*out* *err*]
+                   (timbre/str-println output)))}}))
+      (timbre/set-level! (or level :info)))))
+
 
 (def iida (atom 0))
 (defn iid [& s]
