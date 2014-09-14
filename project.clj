@@ -6,8 +6,10 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [clj-time "0.7.0"]
                  [org.clojure/core.async "0.1.303.0-886421-alpha"]
-                 [com.taoensso/timbre "3.2.0"] 
-                 [org.clojure/tools.reader "0.8.5"]
+                 [com.taoensso/timbre "3.3.1" :exclusions [com.taoensso/encore]] ;; to pick up later version for carmine
+                 [com.taoensso/carmine "2.7.0" :exclusions [org.clojure/clojure]]
+                 [com.draines/postal "1.11.1"] ;so timbre/carmine works 
+                 [org.clojure/tools.reader "0.8.8"]
                  [org.clojure/tools.cli "0.3.1"]]
 
   :aot [acyclic.utils.cli])
