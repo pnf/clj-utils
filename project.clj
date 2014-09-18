@@ -1,6 +1,6 @@
 (defproject acyclic/utils  "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+  :description "Simple clojure utilities"
+  :url "http://github.com/pnf/clj-utils"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
@@ -12,4 +12,17 @@
                  [org.clojure/tools.reader "0.8.8"]
                  [org.clojure/tools.cli "0.3.1"]]
 
-  :aot [acyclic.utils.cli])
+  :aot [acyclic.utils.cli]
+
+
+  :deploy-repositories [["clojars" :clojars]
+                        ;["clojars" {:url https://clojars.org/repo :creds :gpg}]
+                        ]
+
+  :scm {:name git
+        :url "https://github.com/pnf/clj-utils"}
+
+
+
+
+)
