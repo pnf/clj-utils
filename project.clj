@@ -1,4 +1,4 @@
-(defproject acyclic/utils  "0.1.0-SNAPSHOT"
+(defproject acyclic/utils  "0.0.1"
   :description "Simple clojure utilities"
   :url "http://github.com/pnf/clj-utils"
   :license {:name "Eclipse Public License"
