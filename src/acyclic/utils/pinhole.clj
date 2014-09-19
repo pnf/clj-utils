@@ -98,14 +98,14 @@ applied to the final result."
       (let  [[f & ks] f]
         [f (map (partial condition-key paths) ks)])))
 
-(defn mk-ph-mod [target-paths f & arg-paths]
+(defn mk-ph-mod [f & arg-paths]
     (fn [o & more-args]
-      (let [args (map (partial ph-get-in o) (concat target-paths arg-paths))
+      (let [args (map (partial ph-get-in o) arg-paths)
             vs   (apply f (concat args more-args))
-            kvs  (map vector target-paths vs)]
-      (reduce (fn [m [k v]] (ph-assoc-in m k v)) o kvs))))
+            kvs  (map vector arg-paths vs)]
+        (reduce (fn [m [k v]] (ph-assoc-in m k v)) o kvs))))d
 
-
+;;;;;;;;;;;;;;;;
 
 (defn- x-entry
   [m k]
@@ -169,12 +169,7 @@ vs are values corresponding to ks and opts' is opts with those pairs removed."
   (tfx t inc)
 
 
-(defn movexy [x y dir dist] [(+ x (* dist (Math/cos dir)))
-                             (+ y (* dist (Math/sin dir)))])
 
-(def tf (mk-ph-mod [[:position :x] [:position :y]]
-                   movexy
-                   [:heading]))
 
   
 
