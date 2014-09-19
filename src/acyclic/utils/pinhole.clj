@@ -35,75 +35,79 @@
    :else       v))
 
 
-(defn condition-key
+(defn- condition-key
   ([k]
      (if (sequential? k) k [k]))
-  ([paths k]
+  ([path-dict k]
      (cond
       (sequential? k) k
-      (paths k)       (paths k)
+      (path-dict k)       (path-dict k)
       :else           [k])))
 
 (defn ph-assoc
-  "Pinhole association.  o comprises nested maps or records, paths is a map like
+  "Pinhole association.  o comprises nested maps or records, path-dict is a map like
     {:key1 :new-key  ;or
      :key2 [:path :just-like :assoc-in] ...}
    and kvs are alternating keys and values, as in assoc.
-If a key is not found in paths, it is assoc'd normally.
-If a key is found in paths, associated with a scalar, then the value will be assoc'd in with that scalar as a key.
-If a key is found in paths, associated with a sequence, then the value will be assoc-in'd with that sequence,
+If a key is not found in path-dict, it is assoc'd normally.
+If a key is found in path-dict, associated with a scalar, then the value will be assoc'd in with that scalar as a key.
+If a key is found in path-dict, associated with a sequence, then the value will be assoc-in'd with that sequence,
 except that if the first item in the sequence, the result of its application to the value will be assoc'd in
 with the rest of the sequence.
 If the first element of the path is a vector, then the first element of that vector is assumed to be a function
 that will be applied to the value before insertion.
 Returns the \"modified\" o."
-  [m paths & kvs]
+  [path-dict m & kvs]
   (reduce (fn [m [k v]]
-            (ph-assoc-in m (condition-key paths k) v)) m (partition 2  kvs)))
+            (ph-assoc-in m (condition-key path-dict k) v)) m (partition 2  kvs)))
 
 
 (defn ph-get
-"Pinhole lookup.  o comprises nested maps or records, paths is a map like
+"Pinhole lookup.  o comprises nested maps or records, path-dict is a map like
     {:key1 :new-key  ;or
      :key2 [:path :just-like :assoc-in] ...}
    and k is a key.
-If a key is not found in paths, it is retrieved normally with get.
-If a key is found in paths, associated with a scalar, then the value in o keyed by that scalar will be retrieved.
-If a key is found in paths, associated with a sequence, then that sequence will be used to retrieve the value with get-in,
+If a key is not found in path-dict, it is retrieved normally with get.
+
+If a key is found in path-dict, associated with a sequence, then that sequence will be used to retrieve the value with get-in,
 Returns the value.
 If the first element of a path is a vector, then the second element of that vector is assumed to be a function
 applied to the final result."
- [o paths k]
- (ph-get-in o (condition-key paths k)))
+ [path-dict o k]
+ (ph-get-in o (condition-key path-dict k)))
 
 (defn mk-ph-set
   "Returns a function that can be used like assoc, but internally uses the path as in ph-assoc."
-  ([paths k] (mk-ph-set (condition-key paths k)))
+  ([path-dict k] (mk-ph-set (condition-key path-dict k)))
   ([ks]
      (fn [o v] (ph-assoc-in o ks v))))
 
 (defn mk-ph-get
   "Returns a function that can be used like get, but internally uses the path as in ph-get"
-  [ks]
-  (fn [o] (ph-get-in o ks)))
+  ([path-dict k] (mk-ph-get (condition-key path-dict k)))
+  ([ks] (fn [o] (ph-get-in o ks))))
 
 (defn mk-ph-apply
   "Returns a function that modifies within the structure."
     [ks]
     (fn [o f] (ph-assoc-in o ks  (f (ph-get-in o ks)))))
 
-(defn- condition-function [paths f]
+(defn- condition-function [path-dict f]
   (if-not
       (sequential? f) [f]
       (let  [[f & ks] f]
-        [f (map (partial condition-key paths) ks)])))
+        [f (map (partial condition-key path-dict) ks)])))
 
 (defn mk-ph-mod [f & arg-paths]
+  (if (map? (first arg-paths))
+    (let [[path-dict & arg-paths] arg-paths
+          arg-paths  (map (partial condition-key path-dict) arg-paths )]
+      (apply mk-ph-mod f arg-paths))
     (fn [o & more-args]
       (let [args (map (partial ph-get-in o) arg-paths)
             vs   (apply f (concat args more-args))
             kvs  (map vector arg-paths vs)]
-        (reduce (fn [m [k v]] (ph-assoc-in m k v)) o kvs))))d
+        (reduce (fn [m [k v]] (ph-assoc-in m k v)) o kvs)))))
 
 ;;;;;;;;;;;;;;;;
 
@@ -155,22 +159,7 @@ vs are values corresponding to ks and opts' is opts with those pairs removed."
 ;;          Color(255.toByte, 255.toByte, 255.toByte))
 ;; res0: Turtle = Turtle(Point(2.0,3.0),0.0,Color(-1,-1,-1))
 
+
 (comment
-  (defrecord Point [^double x ^double y])
-  (defrecord Color [^short r ^short g ^short b])
-  (defrecord Turtle [^Point position ^double heading ^Color color])
-  (def t (->Turtle (->Point 1.0 2.0) (/ Math/PI 4) (->Color 255 0 0)))
-
-  (def tgx (mk-ph-get [:position :x]))
-  (tgx t)
-  (def tsx (mk-ph-set [:position :x]))
-  (tsx t 3.111)
-  (def tfx (mk-ph-apply [:position :x] ))
-  (tfx t inc)
-
-
-
-
-  
 
 )

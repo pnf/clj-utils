@@ -30,6 +30,10 @@ and the return value of doit will be wrapped as
 ~~~
 and printed to standard output in EDN parseable form.
 
+### acyclic.utils.pinhole
+
+See http://blog.podsnap.com/pinhole.html
+
 ### acyclic.utils.log
 
 A few handy functions that I and probably nobody else will use in concert with
