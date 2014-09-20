@@ -3,7 +3,7 @@
 ;; Pinhole utilities.  Like lenses but more primitive technology.
 
 (defn ph-get-in
-  "Returns the value in a nested associative structure,
+ "Returns the value in a nested associative structure,
   where ks is a sequence of keys. Returns nil if the key
   is not present, or the not-found value if supplied.
   If any element is a vector, the second element of that
@@ -18,6 +18,7 @@
    (vector? k) (ph-get-in ((second k) m) ks)
    k           (ph-get-in (get m k) ks)
    :else       m))
+
 
 (defn ph-assoc-in
   "Associates a value in a nested associative structure, where ks is a
@@ -161,5 +162,15 @@ vs are values corresponding to ks and opts' is opts with those pairs removed."
 
 
 (comment
+
+  (defrecord Point [^double x ^double y])
+  (defrecord Color [^short r ^short g ^short b])
+  (defrecord Turtle [^Point position ^double heading ^Color color])
+  (def t (->Turtle (->Point 1.0 2.0) (/ Math/PI 4) (->Color 255 0 0)))
+
+  (defn movexy [x y dir dist] [(+ x (* dist (Math/cos dir)))
+                             (+ y (* dist (Math/sin dir)))])
+
+  (def turtle-forward (mk-ph-mod movexy [:position :x] [:position :y] [:heading]))
 
 )
