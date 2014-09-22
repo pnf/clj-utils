@@ -4,6 +4,10 @@ Unrelated Clojure utilities
 
 ## Usage
 
+~~~.clj
+[acyclic/utils "0.0.2"]
+~~~
+
 ### acyclic.util.cli
 
 Define ```cli-options``` as per ```clojure.tools.cli``` and a function ```doit```
