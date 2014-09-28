@@ -36,7 +36,7 @@
    :else       v))
 
 
-(defn- condition-key
+(defn condition-key
   ([k]
      (if (sequential? k) k [k]))
   ([path-dict k]
