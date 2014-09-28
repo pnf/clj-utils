@@ -25,15 +25,16 @@
 (t/ann ^:no-check Sin (t/IFn [Number -> Number]))
 (defn Cos [a] (Math/cos a))
 (defn Sin [a] (Math/sin a))
-(t/defn movexy [x :- Number
+(t/defn movexy [x :- Long
                 y :- Number
                 dir :- Number
                 dist :- Number] :- (t/HVec [Number Number])
                 [(+ x (* dist (Cos dir)))
                  (+ y (* dist (Sin dir)))])
 
-(t/ann mover (t/IFn [Turtle Number -> Turtle]))
-(def mover (mk-th-mod movexy 2 [:position :x] [:position :y] [:heading]))
+(t/ann turtle-forward (t/IFn [Turtle Number -> Turtle]))
+(def turtle-forward (mk-th-mod movexy 2 1 [:position :x] [:position :y] [:heading]))
+;(def turtle-forward2 (mk-th-mod movexy 2 1 [:position :x] [:position :y] [:heeding]))
 
 (def path-dict {:x [:position :x]})
 (th-assoc path-dict bruce :x 5)
@@ -44,18 +45,20 @@
 
 (t/ann ^:no-check s->billy (t/IFn [t/Str -> Billy]))
 (t/ann ^:no-check billy->s (t/IFn [Billy -> t/Str]))
-(defn s->billy [s] (read-string s))
-(defn billy->s [b] (pr-str b))
+(defn s->billy [s] (read-string s))(defn billy->s [b] (pr-str b))
 
-(t/ann x Silly)
+(t/ann x  Silly)
 (def x {:a { :b "{:c 3}"}})
 
 (t/ann g (t/IFn [Silly -> t/Num]))
 (def g (mk-th-get [:a :b [billy->s s->billy] :c]))
+;(def h (mk-th-get [:a :b [billy->s s->billy] :d]))
+
 
 (def y (g x))
 
 
+(t/check-ns)
 
 
 
