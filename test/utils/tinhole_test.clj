@@ -25,7 +25,7 @@
 (t/ann ^:no-check Sin (t/IFn [Number -> Number]))
 (defn Cos [a] (Math/cos a))
 (defn Sin [a] (Math/sin a))
-(t/defn movexy [x :- Long
+(t/defn movexy [x :- Number
                 y :- Number
                 dir :- Number
                 dist :- Number] :- (t/HVec [Number Number])
