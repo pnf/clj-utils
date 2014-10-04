@@ -5,13 +5,7 @@
    [taoensso.timbre.appenders.carmine :as car-appender]))
 (timbre/refer-timbre)
 
-(defn stack-trace [e]
-  (let [sw (java.io.StringWriter.)
-        pw (java.io.PrintWriter. sw)
-        _  (.printStackTrace e pw)
-        s  (.toString sw)
-        ls (clojure.string/split-lines s)]
-    (vec (map #(clojure.string/replace % "\tat " "") ls))))
+(defn stack-trace [e] (vec (map str (seq (.getStackTrace e)))))
 
 (def OPTPAT
   (re-pattern (str "\\b" (clojure.string/join "|" (vals clojure.lang.Compiler/CHAR_MAP)) "\\b" )))
