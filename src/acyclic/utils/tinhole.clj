@@ -9,7 +9,6 @@
                                           `(get ~k)))))
           `(-> ~m) path))
 
-
 (t/ann th-assoc-in-gen (t/IFn [t/Any (t/NonEmptySeq t/Any) t/Any -> t/Any]))
 (defn- th-assoc-in-gen [m ks v]
   (let [k  (first ks)
@@ -59,6 +58,3 @@
              [~@fnvals] (~f ~@args ~@margs)]
          (-> ~o 
              ~@(map #(list 'th-assoc-in (nth arg-paths %1) (nth fnvals %1)) (range n-out) ))))))
-
-
-
