@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/core.typed "0.2.68"]
+                 [org.clojure/core.typed "0.2.72"]
                  [clj-time "0.7.0"]
                  [org.clojure/core.async "0.1.303.0-886421-alpha"]
                  [com.taoensso/timbre "3.3.1"
@@ -16,6 +16,7 @@
                  [com.draines/postal "1.11.1"] ;so timbre/carmine works 
                  [org.clojure/tools.reader "0.8.8"]
                  [org.clojure/tools.cli "0.3.1"]
+                 [org.clojure/algo.monads "0.1.5"]
                  ]
 
   :aot [acyclic.utils.cli]
