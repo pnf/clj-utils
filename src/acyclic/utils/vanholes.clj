@@ -68,7 +68,8 @@
    (t/fn [x :- t/Int] :-  (t/HVec [t/Int t/Int]) (vector x (isecond xy)))
    (f (ifirst xy))))
 
-
+;; over  ::  Lens s a -> (a -> a) -> s -> s
+;; over ln fs = runIdentity $ ln (Identity . f) s 
 (t/ann ^:no-check over (t/All [a s] (t/IFn [(Lens s a) [a -> a] s -> s])))
 (defn over [ln f s] (:runIdentity (ln #(->Identity (f %)) s)))
 
@@ -79,7 +80,7 @@
 
 ;; view :: Lens s a -> s -> a
 ;; view ln s = getConst $ ln Const s
-(t/ann ^:no-check view (t/All [a s] [(Lens s a) s -> s] ))
+(t/ann ^:no-check view (t/All [a s] [(Lens s a) s -> a] ))
 (defn view [ln s] (:getConst (ln ->Const s)))
 
 
@@ -189,8 +190,8 @@
   (fn [result input]
     (reduction-function result (* 2 input))))
 
-(t/ann double2-bad (Transducer t/Int t/Int))
-(defn double2-bad [reduction-function]
+#_(t/ann double2-bad (Transducer t/Int t/Int))
+#_(defn double2-bad [reduction-function]
   (fn [result input]
     (keyword (reduction-function result (* 2 input)))))
 
@@ -228,7 +229,7 @@
 (defn -main []
   (println  (reduce (double2 plus) 0 [1 2 3]))
   (println  (reduce (double3 plus) 0 [1 2 3]))
-  (println (reduce (double3-bad plus) 0 [1 2 3]))
+  #_(println (reduce (double3-bad plus) 0 [1 2 3]))
 
 
 
