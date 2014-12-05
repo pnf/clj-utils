@@ -1,0 +1,7 @@
+blogging > GitHub dropped Pygments
+
+Greg Hendershott (F2'14): Speaking of GitHub. I looked at Matt Might's gist here: https://gist.github.com/mattmight/cfdd27bb971eb3a79f53. I clicked Raw. The resulting page doesn't seem to specify any encoding. As a result, λ and β end up as Î» and Î². (And if you copy/paste from there, end up like that in your text editor.)
+
+It's been awhile since I clicked Raw, so I don't know if this is an old problem or a new one.
+
+Greg Hendershott (F2'14): tl;dr "Why does GitHub hate λ?" :cry:
