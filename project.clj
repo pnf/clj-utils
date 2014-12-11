@@ -30,6 +30,8 @@
   :scm {:name git
         :url "https://github.com/pnf/clj-utils"}
 
+  :profiles {:dev {:dependencies [[jonase/eastwood "0.2.0" :exclusions [org.clojure/clojure]]]}}
+
 
 
 
