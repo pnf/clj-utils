@@ -24,11 +24,15 @@
 		      ))))
 		(split-string out "\n"))))
 
+
+
 (setq cmdf-tc "(do (require 'clojure.core.typed)
-    (clojure.string/join \"__EOE__\"(map (fn [e]
-      (let [env (:env (ex-data e))]
-         (str (:file env) \":\" (:line env) \":\" (:column env) \":\"
-                   (.getMessage e))))  (:delayed-errors (t/check-ns-info '%s)))))")
+    (clojure.string/join \"__EOE__\"
+      (map
+        (fn [e] (let [env (:env (ex-data e))]
+                  (str (:file env) \":\" (:line env) \":\" (:column env) \":\"
+                       (.getMessage e))))
+        (:delayed-errors (t/check-ns-info '%s)))))")
 
 (defun parse-tc (out)
   "Parse an output chunk from typed clojure: OUT."
@@ -45,6 +49,9 @@
 	     (split-string out "__EOE__"))))
 
 
+(defun dequote (s)
+  "Dequote string S."
+  (replace-regexp-in-string "\\\\t" "\t" (replace-regexp-in-string "\\\\n" "\n" s))  )
 
 (defun flycheck-clj-cider-start (checker callback)
   "Begin flychecking, with CHECKER and CALLBACK."
@@ -63,7 +70,8 @@
       (lambda (_buffer out)
 	(mapc (lambda (w) (pcase-let* ((`(,file ,line ,column ,msg) w))
 			      (push
-			       (flycheck-error-new-at line column 'error msg
+			       (flycheck-error-new-at line column 'error
+						      (dequote msg)
 						      :checker checker
 						      :buffer buffer
 						      :filename fname)
@@ -81,7 +89,8 @@
 	(let ((parsed-tc ))
 	  (mapc (lambda (w) (pcase-let* ((`(,file ,line ,column ,msg) w))
 			      (push
-			       (flycheck-error-new-at line column 'error msg
+			       (flycheck-error-new-at line column 'error
+						      (dequote msg)
 						      :checker checker
 						      :buffer buffer
 						      :filename fname)
@@ -99,6 +108,7 @@
 		 buffer
 		 (lambda (_buffer _value)
 		   (message "Finished all clj checks.")
+		   ;;(print errors)
 		   (funcall callback 'finished errors))
 		 (lambda (_buffer out))
 		 (lambda (_buffer err))
