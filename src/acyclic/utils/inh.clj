@@ -13,23 +13,23 @@
         (recur (concat stack (map vector (f-kids o) (repeat (inc depth))))
                (conj seen o))))))
 
-(defn inh-graph [o]  (dfs (.getClass o)
+(defn inh-graph [^Object o]  (dfs (.getClass o)
                           #(println (apply str (repeat %1 " ")) %2)
                           #(println (apply str (repeat %1 " ")) "..." )
-                          #(let [ifcs (seq (.getInterfaces %))
-                                 sc   (.getSuperclass %)]
-                             (if sc (conj ifcs sc) ifcs))))
+                          #(fn [^Class c] (let [ifcs (seq (.getInterfaces c))
+                                               sc   (.getSuperclass c)]
+                               (if sc (conj ifcs sc) ifcs)))))
 
 
 ;; From Chas Emerick's Clojure Programming.  Provides a skeleton of all the 
 ;; methods necessary to implement something, e.g. (scaffold (clojure.lang.Cons))
 (defn scaffold
-  [interface]
+  [^Class interface]
   (doseq [[iface methods] (->> interface
-                            .getMethods
-                            (map #(vector (.getName (.getDeclaringClass %))
-                                    (symbol (.getName %))
-                                    (count (.getParameterTypes %))))
+                               .getMethods
+                               (map (fn [^java.lang.reflect.Method m] (vector (.getName (.getDeclaringClass m))
+                                                                          (symbol (.getName m))
+                                                                          (count (.getParameterTypes m)))))
                             (group-by first))]
     (println (str "  " iface))
     (doseq [[_ name argcount] methods]
